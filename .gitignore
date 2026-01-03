@@ -1,0 +1,14 @@
+# Plugin directories (managed by plugin manager)
+plugin/
+lazy-lock.json
+.luarc.json
+
+# Undo/backup files
+*.swp
+*.swo
+*~
+.netrwhist
+
+# OS files
+.DS_Store
+Thumbs.db
