@@ -69,3 +69,8 @@ end
 
 -- Terminal toggle (works everywhere)
 map("n", "<leader>tt", "<cmd>terminal<CR>", { desc = "Open terminal" })
+
+--Telescope Key Maps
+map("n", "<leader>fp", function()
+	require("core.workspace.telescope").pick()
+end, { desc = "Projects" })
