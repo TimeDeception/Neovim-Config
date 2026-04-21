@@ -47,14 +47,44 @@ if not is_termux then
 	map("n", "<leader>gg", "<cmd>LazyGit<cr>", { desc = "LazyGit" })
 
 	-- Theme toggle (laptop only - phone uses single theme)
-	map("n", "<leader>ut", function()
-		local themes = { "catppuccin", "tokyonight", "gruvbox", "rose-pine", "nightfox" }
-		local index = vim.g.current_theme_index or 1
-		index = index % #themes + 1
-		vim.g.current_theme_index = index
-		vim.cmd.colorscheme(themes[index])
-		vim.notify("Theme: " .. themes[index], vim.log.levels.INFO)
-	end, { desc = "Toggle theme" })
+  -- Load persisted colorscheme on startup
+local colorscheme_file = vim.fn.stdpath("config") .. "/colorscheme.lua"
+
+local function save_colorscheme(name)
+  local f = io.open(colorscheme_file, "w")
+  if f then
+    f:write('vim.cmd.colorscheme("' .. name .. '")')
+    f:close()
+  end
+end
+
+local function load_colorscheme()
+  if vim.fn.filereadable(colorscheme_file) == 1 then
+    dofile(colorscheme_file)
+  else
+    vim.cmd.colorscheme("tokyonight-moon") -- your default fallback
+  end
+end
+
+-- Apply on startup
+load_colorscheme()
+
+-- Call this from your toggle button
+vim.api.nvim_create_user_command("SetColorscheme", function(opts)
+  vim.cmd.colorscheme(opts.args)
+  save_colorscheme(opts.args)
+end, { nargs = 1 })
+
+map("n", "<leader>ut", function()
+  local themes = { "catppuccin", "tokyonight", "gruvbox", "rose-pine", "nightfox" }
+  local index = vim.g.current_theme_index or 1
+  index = index % #themes + 1
+  vim.g.current_theme_index = index
+  local theme = themes[index]
+  vim.cmd.colorscheme(theme)
+  save_colorscheme(theme)
+  vim.notify("Theme: " .. theme, vim.log.levels.INFO)
+end, { desc = "Toggle theme" })	
 else
 	-- Phone-only keymaps (simpler alternatives)
 	map("n", "<leader>ff", "<cmd>find ", { desc = "Find file" }) -- Simple :find

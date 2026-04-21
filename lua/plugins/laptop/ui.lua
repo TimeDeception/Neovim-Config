@@ -44,13 +44,38 @@ return {
 		end,
 	},
 
-	{
-		"nvimdev/dashboard-nvim",
-		event = "VimEnter",
-		config = function()
-			require("dashboard").setup({ theme = "hyper" })
-		end,
-	},
+{
+	"nvimdev/dashboard-nvim",
+	event = "VimEnter",
+	config = function()
+		local db = require("dashboard")
+		local workspace = require("core.workspace.switch")
+
+		db.setup({
+			theme = "hyper",
+
+			config = {
+				shortcut = {
+					{
+						desc = "Projects",
+						group = "Label",
+						action = function()
+							require("core.workspace.telescope").pick()
+						end,
+						key = "p",
+					},
+				},
+
+				project = {
+					enable = true,
+					action = function(path)
+						workspace.open_project(path)
+					end,
+				},
+			},
+		})
+	end,
+},
 
 	{
 		"rcarriga/nvim-notify",

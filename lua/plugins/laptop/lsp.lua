@@ -1,59 +1,82 @@
-return{
-	"mason-org/mason-lspconfig.nvim",
-	dependencies = {
+return {
+	{
 		"neovim/nvim-lspconfig",
-		{ "mason-org/mason.nvim", opts = {} },
+		dependencies = {
+			"williamboman/mason.nvim",
+			"williamboman/mason-lspconfig.nvim",
+		},
 
-		-- ❌ REMOVE mason-null-ls completely
+		config = function()
+			-- Mason (kept for installing LSP servers)
+			require("mason").setup()
 
-		"nvimtools/none-ls.nvim",
-		"nvimtools/none-ls-extras.nvim",
-	},
+			require("mason-lspconfig").setup({
+				ensure_installed = {
+					"lua_ls",
+					"ts_ls",
+					"eslint",
+					"pyright",
+					"ruff",
+					"html",
+					"cssls",
+				},
+			})
 
-	config = function()
-		local lspconfig = require("lspconfig")
+			-- Shared keymaps
+			local on_attach = function(_, bufnr)
+				local opts = { buffer = bufnr }
 
-		require("mason-lspconfig").setup({
-			ensure_installed = {
+				vim.keymap.set("n", "gd", vim.lsp.buf.definition, opts)
+				vim.keymap.set("n", "K", vim.lsp.buf.hover, opts)
+				vim.keymap.set("n", "<leader>lr", vim.lsp.buf.rename, opts)
+				vim.keymap.set("n", "<leader>la", vim.lsp.buf.code_action, opts)
+			end
+
+			-- =========================
+			-- LSP CONFIG (NEW API)
+			-- =========================
+
+			vim.lsp.config("lua_ls", {
+				on_attach = on_attach,
+			})
+
+			vim.lsp.config("ts_ls", {
+				on_attach = on_attach,
+			})
+
+			vim.lsp.config("eslint", {
+				on_attach = on_attach,
+			})
+
+			vim.lsp.config("pyright", {
+				on_attach = on_attach,
+			})
+
+			vim.lsp.config("ruff", {
+				on_attach = on_attach,
+			})
+
+			vim.lsp.config("html", {
+				on_attach = on_attach,
+			})
+
+			vim.lsp.config("cssls", {
+				on_attach = on_attach,
+			})
+
+			-- =========================
+			-- ENABLE SERVERS
+			-- =========================
+
+			vim.lsp.enable({
 				"lua_ls",
 				"ts_ls",
 				"eslint",
-				"cssls",
-				"html",
-				"jsonls",
-				"emmet_ls",
-				"intelephense",
 				"pyright",
-			},
-		})
-
-		------------------------------------------------------------
-		-- LSP handlers
-		------------------------------------------------------------
-		require("mason-lspconfig").setup({
-			handlers = {
-		    function(server_name)
-		  	require("lspconfig")[server_name].setup({})
-		  end,
-	    },
-		})
-
-		------------------------------------------------------------
-		-- FORMATTERS (none-ls)
-		------------------------------------------------------------
-		local null_ls = require("null-ls")
-
-		null_ls.setup({
-			sources = {
-				-- JS/TS
-				null_ls.builtins.formatting.prettier,
-
-				-- Lua
-				null_ls.builtins.formatting.stylua,
-
-				-- Python
-				null_ls.builtins.formatting.black,
-			},
-		})
-	end,
+				"ruff",
+				"html",
+				"cssls",
+			})
+		end,
+	},
 }
