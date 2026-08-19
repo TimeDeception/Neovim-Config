@@ -7,6 +7,7 @@ M.base_dirs = {
 	vim.fn.expand("~/workspace"),
   vim.fn.expand("~/Desktop"),
   vim.fn.expand("~/.config/nvim"),
+  vim.fn.expand("~/.config"),
 }
 
 -- Files that indicate a project
